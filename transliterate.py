@@ -84,7 +84,8 @@ CYRILLIC_TO_LATIN = {
     'ҳ': 'h', 'Ҳ': 'H',
 }
 CYRILLIC_CONSONANTS = (
-    'а', 'А', 'е', 'Е', 'ё', 'Ё', 'и', 'И', 'о', 'О', 'у', 'У', 'э', 'Э', 'ю', 'Ю', 'я', 'Я', 'ў', 'Ў'
+    'а', 'А', 'е', 'Е', 'ё', 'Ё', 'и', 'И', 'о', 'О', 'у', 'У', 'э', 'Э',
+    'ю', 'Ю', 'я', 'Я', 'ў', 'Ў'
 )
 
 
@@ -96,16 +97,38 @@ def to_cyrillic(text):
 
 def to_latin(text):
     """Transliterate cyrillic text to latin using the following rules:
-    1. ц = s at the beginning of a word or in the middle of a word after consonant sound.
-    ц = ts in the middle of a word after a vowel sound.
+    1. ц = s at the beginning of a word.
+    ц = ts in the middle of a word after a vowel.
+    ц = s in the middle of a word after consonant (DEFAULT in CYRILLIC_TO_LATIN)
         цирк = sirk
         цех = sex
         федерация = federatsiya
         функция = funksiya
+    2. е = ye at the beginning of a word or after a vowel.
+    е = e in the middle of a word after a consonant (DEFAULT).
+    3. Сентябр = Sentabr, Октябр = Oktabr
     """
-    # rule 1
-    # regex = re.compile('\b([цЦ])')
-    # text = regex.sub(lambda x: 's' if x == 'ц' else 'S', text)
+    beginning_rules = {
+        'ц': 's', 'Ц': 'S',
+        'е': 'ye', 'Е': 'Ye'
+    }
+    after_vowel_rules = {
+        'ц': 'ts', 'Ц': 'Ts',
+        'е': 'ye', 'Е': 'Ye'
+    }
+
+    text = re.sub('\b([цЦеЕ])', lambda x: beginning_rules[x.group(1)], text)
+    text = re.sub(
+        '(%s)([цЦеЕ])' % '|'.join(CYRILLIC_CONSONANTS),
+        lambda x: '%s%s' % (x.group(1), after_vowel_rules[x.group(2)]),
+        text
+    )
+    text = re.sub(
+        '(сент|окт)([яЯ])(бр)',
+        lambda x: '%s%s%s' % (x.group(1), 'a' if x.group(2) == 'я' else 'A', x.group(3)),
+        text,
+        flags=re.IGNORECASE
+    )
 
     return text
 
