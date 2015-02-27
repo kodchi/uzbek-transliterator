@@ -42,7 +42,7 @@ LATIN_TO_CYRILLIC = {
     'ye': 'е', 'Ye': 'Е', 'YE': 'Е',
     'ʼ': 'ъ',  # TODO: case?
 }
-LATIN_CONSONANTS = (
+LATIN_VOWELS = (
     'a', 'A', 'e', 'E', 'i', 'I', 'o', 'O', 'u', 'U', 'o‘', 'O‘'
 )
 
@@ -83,7 +83,7 @@ CYRILLIC_TO_LATIN = {
     'ғ': 'gʻ', 'Ғ': 'Gʻ',
     'ҳ': 'h', 'Ҳ': 'H',
 }
-CYRILLIC_CONSONANTS = (
+CYRILLIC_VOWELS = (
     'а', 'А', 'е', 'Е', 'ё', 'Ё', 'и', 'И', 'о', 'О', 'у', 'У', 'э', 'Э',
     'ю', 'Ю', 'я', 'Я', 'ў', 'Ў'
 )
@@ -119,7 +119,7 @@ def to_latin(text):
 
     text = re.sub('\b([цЦеЕ])', lambda x: beginning_rules[x.group(1)], text)
     text = re.sub(
-        '(%s)([цЦеЕ])' % '|'.join(CYRILLIC_CONSONANTS),
+        '(%s)([цЦеЕ])' % '|'.join(CYRILLIC_VOWELS),
         lambda x: '%s%s' % (x.group(1), after_vowel_rules[x.group(2)]),
         text
     )
@@ -128,6 +128,12 @@ def to_latin(text):
         lambda x: '%s%s%s' % (x.group(1), 'a' if x.group(2) == 'я' else 'A', x.group(3)),
         text,
         flags=re.IGNORECASE
+    )
+
+    text = re.sub(
+        '(%s)' % '|'.join(CYRILLIC_TO_LATIN.keys()),
+        lambda x: CYRILLIC_TO_LATIN[x.group(1)],
+        text
     )
 
     return text
