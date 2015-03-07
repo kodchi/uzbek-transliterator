@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
 
-
 LATIN_TO_CYRILLIC = {
     'a': 'а', 'A': 'А',
     'b': 'б', 'B': 'Б',
@@ -1218,11 +1217,10 @@ CYRILLIC_VOWELS = (
 
 def to_cyrillic(text):
     """Transliterate latin text to cyrillic  using the following rules:
-    1. ts = ц after a vowel, otherwise ts = тс
-    2. ye = е in the beginning of a word or after a vowel
-    3. e = э in the beginning of a word or after a vowel
-    4. ц exception words
-    5. э exception words
+    1. ye = е in the beginning of a word or after a vowel
+    2. e = э in the beginning of a word or after a vowel
+    3. ц exception words
+    4. э exception words
     """
     # These compounds must be converted before other letters
     compounds_first = {
@@ -1249,7 +1247,6 @@ def to_cyrillic(text):
     after_vowel_rules = {
         'ye': 'е', 'Ye': 'Е', 'YE': 'Е',
         'e': 'э', 'E': 'Э',
-        'ts': 'ц', 'Ts': 'Ц', 'TS': 'Ц'  # but not tS
     }
     exception_words_rules = {
         's': 'ц', 'S': 'Ц',
