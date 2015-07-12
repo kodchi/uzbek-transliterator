@@ -1258,6 +1258,10 @@ def to_cyrillic(text):
         'ya': 'йа', 'Ya': 'Йа', 'YA': 'ЙА',
     }
 
+    # standardize some characters
+    # the first one is the windows string, the second one is the mac string
+    text = text.replace('ʻ', '‘')
+
     def replace_soft_sign_words(m):
         word = m.group(1)
         if word.isupper():
@@ -1273,7 +1277,8 @@ def to_cyrillic(text):
         text = re.sub(
             r'\b(%s)' % word,
             replace_soft_sign_words,
-            text
+            text,
+            flags=re.U
         )
 
     def replace_exception_words(m):
@@ -1288,38 +1293,44 @@ def to_cyrillic(text):
         text = re.sub(
             r'\b(%s)' % word,
             replace_exception_words,
-            text
+            text,
+            flags=re.U
         )
 
     # compounds
     text = re.sub(
         r'(%s)' % '|'.join(compounds_first.keys()),
         lambda x: compounds_first[x.group(1)],
-        text
+        text,
+        flags=re.U
     )
 
     text = re.sub(
         r'(%s)' % '|'.join(compounds_second.keys()),
         lambda x: compounds_second[x.group(1)],
-        text
+        text,
+        flags=re.U
     )
 
     text = re.sub(
         r'\b(%s)' % '|'.join(beginning_rules.keys()),
         lambda x: beginning_rules[x.group(1)],
-        text
+        text,
+        flags=re.U
     )
 
     text = re.sub(
         r'(%s)(%s)' % ('|'.join(LATIN_VOWELS), '|'.join(after_vowel_rules.keys())),
         lambda x: '%s%s' % (x.group(1), after_vowel_rules[x.group(2)]),
-        text
+        text,
+        flags=re.U
     )
 
     text = re.sub(
         r'(%s)' % '|'.join(LATIN_TO_CYRILLIC.keys()),
         lambda x: LATIN_TO_CYRILLIC[x.group(1)],
-        text
+        text,
+        flags=re.U
     )
 
     return text
@@ -1351,24 +1362,28 @@ def to_latin(text):
         r'(сент|окт)([яЯ])(бр)',
         lambda x: '%s%s%s' % (x.group(1), 'a' if x.group(2) == 'я' else 'A', x.group(3)),
         text,
-        flags=re.IGNORECASE
+        flags=re.IGNORECASE|re.U
     )
 
     text = re.sub(
         r'\b(%s)' % '|'.join(beginning_rules.keys()),
         lambda x: beginning_rules[x.group(1)],
-        text)
+        text,
+        flags=re.U
+    )
 
     text = re.sub(
         r'(%s)(%s)' % ('|'.join(CYRILLIC_VOWELS), '|'.join(after_vowel_rules.keys())),
         lambda x: '%s%s' % (x.group(1), after_vowel_rules[x.group(2)]),
-        text
+        text,
+        flags=re.U
     )
 
     text = re.sub(
         r'(%s)' % '|'.join(CYRILLIC_TO_LATIN.keys()),
         lambda x: CYRILLIC_TO_LATIN[x.group(1)],
-        text
+        text,
+        flags=re.U
     )
 
     return text
