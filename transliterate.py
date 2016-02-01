@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
+import sys
 
 LATIN_TO_CYRILLIC = {
     'a': 'а', 'A': 'А',
@@ -1320,7 +1321,8 @@ def to_cyrillic(text):
     )
 
     text = re.sub(
-        r'(%s)(%s)' % ('|'.join(LATIN_VOWELS), '|'.join(after_vowel_rules.keys())),
+        r'(%s)(%s)' % ('|'.join(LATIN_VOWELS),
+                       '|'.join(after_vowel_rules.keys())),
         lambda x: '%s%s' % (x.group(1), after_vowel_rules[x.group(2)]),
         text,
         flags=re.U
@@ -1360,9 +1362,10 @@ def to_latin(text):
 
     text = re.sub(
         r'(сент|окт)([яЯ])(бр)',
-        lambda x: '%s%s%s' % (x.group(1), 'a' if x.group(2) == 'я' else 'A', x.group(3)),
+        lambda x: '%s%s%s' % (x.group(1),
+                              'a' if x.group(2) == 'я' else 'A', x.group(3)),
         text,
-        flags=re.IGNORECASE|re.U
+        flags=re.IGNORECASE | re.U
     )
 
     text = re.sub(
@@ -1373,7 +1376,8 @@ def to_latin(text):
     )
 
     text = re.sub(
-        r'(%s)(%s)' % ('|'.join(CYRILLIC_VOWELS), '|'.join(after_vowel_rules.keys())),
+        r'(%s)(%s)' % ('|'.join(CYRILLIC_VOWELS),
+                       '|'.join(after_vowel_rules.keys())),
         lambda x: '%s%s' % (x.group(1), after_vowel_rules[x.group(2)]),
         text,
         flags=re.U
@@ -1396,3 +1400,8 @@ def transliterate(text, to_variant):
         text = to_latin(text)
 
     return text
+
+if __name__ == "__main__":
+    """cat input_in_lat.txt | python transliterate.py > output_in_cyr.txt"""
+    for line in sys.stdin:
+        sys.stdout.write(transliterate(line, 'cyrillic'))
