@@ -1285,9 +1285,9 @@ def to_cyrillic(text):
     def replace_exception_words(m):
         """Replace ц (or э) only leaving other characters unchanged"""
         return '%s%s%s' % (
-            m.group(1)[:m.start(2)],
+            m.group(1)[:m.start(1)-m.start(2)-1],
             exception_words_rules[m.group(2)],
-            m.group(1)[m.end(2):]
+            m.group(1)[m.end(1)-m.end(2)+1:]
         )
     # loop because of python's limit of 100 named groups
     for word in list(TS_WORDS.keys()) + list(E_WORDS.keys()):
