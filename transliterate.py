@@ -1262,6 +1262,8 @@ def to_cyrillic(text):
     # standardize some characters
     # the first one is the windows string, the second one is the mac string
     text = text.replace('ʻ', '‘')
+    # replace single quote mark (') with proper character (ʻ)
+    text = text.replace("'", "ʻ")
 
     def replace_soft_sign_words(m):
         word = m.group(1)
