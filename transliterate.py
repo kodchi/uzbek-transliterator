@@ -1284,20 +1284,11 @@ def to_cyrillic(text):
 
     def replace_exception_words(m):
         """Replace ц (or э) only leaving other characters unchanged"""
-        boshi = m.start(0)
-        gacha = m.start(2)-boshi
-        # print(m.group(2))
-        # print(m.start(2))
-        # print(m.end(2))
-        # print(m.group(1))
-        # print(m.start(1))
-        # print(m.end())
         result = '%s%s%s' % (
             m.group(1)[:m.start(2)-m.start(0)],
             exception_words_rules[m.group(2)],
             m.group(1)[m.end(2)-m.start(0):]
         )
-        # print(result)
         return result
     # loop because of python's limit of 100 named groups
     for word in list(TS_WORDS.keys()) + list(E_WORDS.keys()):
