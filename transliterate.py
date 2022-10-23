@@ -27,7 +27,7 @@ LATIN_TO_CYRILLIC = {
     'x': 'х', 'X': 'Х',
     'y': 'й', 'Y': 'Й',
     'z': 'з', 'Z': 'З',
-    'ʼ': 'ъ',  # TODO: case?
+    'ʼ': 'ъ', "'": 'ъ'
 }
 LATIN_VOWELS = (
     'a', 'A', 'e', 'E', 'i', 'I', 'o', 'O', 'u', 'U', 'o‘', 'O‘'
@@ -1238,8 +1238,8 @@ def to_cyrillic(text):
         'ya': 'я', 'Ya': 'Я', 'YA': 'Я',
         'ye': 'е', 'Ye': 'Е', 'YE': 'Е',
         # different kinds of apostrophes
-        'o‘': 'ў', 'O‘': 'Ў', 'oʻ': 'ў', 'Oʻ': 'Ў',
-        'g‘': 'ғ', 'G‘': 'Ғ', 'gʻ': 'ғ', 'Gʻ': 'Ғ',
+        'o‘': 'ў', 'O‘': 'Ў', 'oʻ': 'ў', 'Oʻ': 'Ў', "o'": 'ў', "O'": 'Ў', "o’": 'ў', "O’": 'Ў',
+        'g‘': 'ғ', 'G‘': 'Ғ', 'gʻ': 'ғ', 'Gʻ': 'Ғ', "g'": 'ғ', "G'": 'Ғ', "g’": 'ғ', "G’": 'Ғ',
     }
     beginning_rules = {
         'ye': 'е', 'Ye': 'Е', 'YE': 'Е',
@@ -1284,11 +1284,12 @@ def to_cyrillic(text):
 
     def replace_exception_words(m):
         """Replace ц (or э) only leaving other characters unchanged"""
-        return '%s%s%s' % (
-            m.group(1)[:m.start(2)],
+        result = '%s%s%s' % (
+            m.group(1)[:m.start(2)-m.start(0)],
             exception_words_rules[m.group(2)],
-            m.group(1)[m.end(2):]
+            m.group(1)[m.end(2)-m.start(0):]
         )
+        return result
     # loop because of python's limit of 100 named groups
     for word in list(TS_WORDS.keys()) + list(E_WORDS.keys()):
         text = re.sub(
@@ -1400,6 +1401,7 @@ def transliterate(text, to_variant):
         text = to_latin(text)
 
     return text
+
 
 if __name__ == "__main__":
     """cat input_in_lat.txt | python transliterate.py > output_in_cyr.txt"""
